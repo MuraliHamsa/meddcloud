@@ -1,0 +1,35 @@
+.error, .required{
+	color: red;
+}
+.payment {
+	border: 1px solid #ccc;
+}
+.payment_label {
+    margin-top: 8px;
+    font-weight: 300;
+    text-align: center;
+}
+.invoice-block {
+    text-align: right;
+}
+ul.amounts li {
+    background: #f5f5f5;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    font-weight: 300;
+}
+ul li {
+    list-style: none;
+}
+.weather-bg {
+    background: #5A9599;
+    border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 300;
+}
+.datepicker{z-index:1151 !important;}

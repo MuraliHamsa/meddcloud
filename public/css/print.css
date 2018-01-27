@@ -1,0 +1,15 @@
+/* Enhancement for printing */
+
+@page {
+  size: A6;
+  margin: 0;
+}
+
+@media print {
+
+  /* original code  */
+  .no-print {
+    display: none;
+  }
+
+}
