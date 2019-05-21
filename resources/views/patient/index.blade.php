@@ -138,6 +138,7 @@
           data: '',
           dataType: 'json',
         }).success(function (response) {
+           
           $('#patientval').find('[name="password"]').removeAttr('id');
 
           $('#editPatientForm').find('[name="id"]').val(response.id).end()

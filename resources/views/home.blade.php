@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('htmlheader_title')
@@ -11,7 +12,10 @@
 
 @section('main-content')
 
-<?php $data = Helpers::getNotification();?>
+<?php $data = Helpers::getNotification();
+
+  
+?>
 @if(Auth::user()->group[0]['name'] != 'superadmin')
 		@if(in_array(Auth::user()->group[0]['name'], ['admin', 'Accountant', 'Nurse', 'Doctor', 'Laboratorist','Receptionist','Transcriptionist']))
 			<div class="row">
@@ -23,7 +27,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-stethoscope"></i></span>
 			            	<div class="info-box-content">
 			            		<span class="info-box-text">Doctor</span>
-			              		<span class="info-box-number">{{ @$data['doctor'] }}</span>
 		              		</div>
 		              	</div>
 		            @if(Auth::user()->group[0]['name'] == 'admin')
@@ -37,7 +40,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Patient</span>
-			              		<span class="info-box-number">{{ @$data['patient'] }}</span>
 			            	</div>
 			          	</div>
 		          	</a>
@@ -51,7 +53,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-female"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Nurse</span>
-			              		<span class="info-box-number">{{ @$data['nurse'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -67,7 +68,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-user"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Transcriptionist</span>
-			              		<span class="info-box-number">{{ @$data['transcriptionist'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -85,7 +85,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-female"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Receptionist</span>
-			              		<span class="info-box-number">{{ @$data['receptionist'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -101,7 +100,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-medkit"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Pharmacist</span>
-			              		<span class="info-box-number">{{ @$data['pharmacist'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -117,7 +115,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-user"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Laboratorist</span>
-			              		<span class="info-box-number">{{ @$data['laboratorist'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -133,7 +130,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Accountant</span>
-			              		<span class="info-box-number">{{ @$data['accountant'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -151,7 +147,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-plus-square-o"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Medicine</span>
-			              		<span class="info-box-number">{{ @$data['medicine'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -167,7 +162,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-wheelchair"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Operation Report</span>
-			              		<span class="info-box-number">{{ @$data['operation_report'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -183,7 +177,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-smile-o"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Birth Report</span>
-			              		<span class="info-box-number">{{ @$data['birth_report'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -199,7 +192,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-briefcase"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Donor</span>
-			              		<span class="info-box-number">{{ @$data['donor'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -219,7 +211,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-home"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Bed</span>
-			              		<span class="info-box-number">{{ @$data['bed'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -235,7 +226,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-sitemap"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Department</span>
-			              		<span class="info-box-number">{{ @$data['department'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -253,7 +243,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-list-alt"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Payment</span>
-			              		<span class="info-box-number">{{ @$data['payment'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -269,7 +258,6 @@
 			            	<span class="info-box-icon bg-aqua"><i class="fa fa-list-alt"></i></span>
 			            	<div class="info-box-content">
 			              		<span class="info-box-text">Expense</span>
-			              		<span class="info-box-number">{{ @$data['expense'] }}</span>
 			            	</div>
 			          	</div>
 			        @if(Auth::user()->group[0]['name'] == 'admin')
@@ -286,7 +274,6 @@
 		            	<span class="info-box-icon bg-aqua"><i class="fa fa-bar-chart-o"></i></span>
 		            	<div class="info-box-content">
 		              		<span class="info-box-text">Total Payment</span>
-		              		<span class="info-box-number">{{ $data['settings'] }} {{ @$data['total_payment'] }}</span>
 		            	</div>
 		          	</div>
 		        </div>

@@ -60,9 +60,9 @@ class DoctorController extends Controller
     public function store(StoreDoctorRequest $request)
     {
         $input = $request->all();
-        if($request->file('image')){
-            $input['image'] = $this->imageUpload($request->file('image'), 'doctor');
-        }
+        // if($request->file('image')){
+        //     $input['image'] = $this->imageUpload($request->file('image'), 'doctor');
+        // }
         $user = User::storeUser($input, 4);
         if($user){
             $input['hospital_id'] = $this->hospital->id;

@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/aws/aws-sdk-php-laravel.svg)](https://travis-ci.org/aws/aws-sdk-php-laravel)
 [![Latest Stable Version](https://img.shields.io/packagist/v/aws/aws-sdk-php-laravel.svg)](https://packagist.org/packages/aws/aws-sdk-php-laravel)
 [![Total Downloads](https://img.shields.io/packagist/dt/aws/aws-sdk-php-laravel.svg)](https://packagist.org/packages/aws/aws-sdk-php-laravel)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/aws/aws-sdk-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/aws/aws-sdk-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is a simple [Laravel](http://laravel.com/) service provider for making it easy to include the official
 [AWS SDK for PHP](https://github.com/aws/aws-sdk-php) in your Laravel and Lumen applications.
@@ -36,9 +36,18 @@ Then run a composer update
 php composer.phar update
 ```
 
-To use the AWS Service Provider, you must register the provider when bootstrapping your Laravel application.
+To use the AWS Service Provider, you must register the provider when bootstrapping your application.
 
-Find the `providers` key in your `config/app.php` and register the AWS Service Provider.
+
+### Lumen
+In Lumen find the `Register Service Providers` in your `bootstrap/app.php` and register the AWS Service Provider.
+
+```php
+    $app->register(Aws\Laravel\AwsServiceProvider::class);
+```
+
+### Laravel
+In Laravel find the `providers` key in your `config/app.php` and register the AWS Service Provider.
 
 ```php
     'providers' => array(
@@ -68,18 +77,18 @@ AWS_REGION (default = us-east-1)
 To customize the configuration file, publish the package configuration using Artisan.
 
 ```sh
-php artisan vendor:publish
+php artisan vendor:publish  --provider="Aws\Laravel\AwsServiceProvider"
 ```
 
-Update your settings in the generated `app/config/aws.php` configuration file.
+The settings can be found in the generated `config/aws.php` configuration file. By default, the credentials and region settings will pull from your `.env` file.
 
 ```php
 return [
     'credentials' => [
-        'key'    => 'YOUR_AWS_ACCESS_KEY_ID',
-        'secret' => 'YOUR_AWS_SECRET_ACCESS_KEY',
+        'key'    => env('AWS_ACCESS_KEY_ID', ''),
+        'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
     ],
-    'region' => 'us-west-2',
+    'region' => env('AWS_REGION', 'us-east-1'),
     'version' => 'latest',
     
     // You can override settings for specific services
@@ -88,6 +97,11 @@ return [
     ],
 ];
 ```
+
+Note that you can always delete the `credentials` line from this file if you'd like to use the [default SDK Configuration Provider chain](https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/guide_credentials.html#default-credential-chain) instead.
+
+Referring Laravel 5.2.0 [Upgrade guide](https://laravel.com/docs/5.2/upgrade#upgrade-5.2.0), you must using config 
+file instead of environment variable option if using php artisan `config:cache`.
 
 Learn more about [configuring the SDK](http://docs.aws.amazon.com/aws-sdk-php/v3/guide/guide/configuration.html) on
 the SDK's User Guide.

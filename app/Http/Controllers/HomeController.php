@@ -34,6 +34,7 @@ class HomeController extends Controller
     public function index()
     {
         $hospitals = Hospital::all();
+        
         return view('home')->with('hospitals', $hospitals);
     }
 

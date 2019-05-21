@@ -56,6 +56,7 @@ class PatientController extends Controller
                 $query->groupBy('patient_id');
             }]);
 
+       
         return Datatables::of($patient)
             ->addColumn('actions', function ($patient) {
                 return $patient->action_buttons;
@@ -82,9 +83,9 @@ class PatientController extends Controller
     public function store(StorePatientRequest $request)
     {
         $input = $request->all();
-        if($request->file('image')){
-            $input['image'] = $this->imageUpload($request->file('image'), 'patient');
-        }
+        // if($request->file('image')){
+        //     $input['image'] = $this->imageUpload($request->file('image'), 'patient');
+        // }
         $user = User::storeUser($input, 5);
         if($user){
             $input['hospital_id'] = $this->hospital->id;

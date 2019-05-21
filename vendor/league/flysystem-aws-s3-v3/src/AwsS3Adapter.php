@@ -5,6 +5,7 @@ namespace League\Flysystem\AwsS3v3;
 use Aws\Result;
 use Aws\S3\Exception\DeleteMultipleObjectsException;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\Exception\S3MultipartUploadException;
 use Aws\S3\S3Client;
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\Adapter\CanOverwriteFiles;
@@ -20,30 +21,41 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
      * @var array
      */
     protected static $resultMap = [
-        'Body' => 'contents',
+        'Body'          => 'contents',
         'ContentLength' => 'size',
-        'ContentType' => 'mimetype',
-        'Size' => 'size',
-        'Metadata' => 'metadata',
+        'ContentType'   => 'mimetype',
+        'Size'          => 'size',
+        'Metadata'      => 'metadata',
+        'StorageClass'  => 'storageclass',
+        'ETag'          => 'etag',
+        'VersionId'     => 'versionid'
     ];
 
     /**
      * @var array
      */
     protected static $metaOptions = [
-        'CacheControl',
-        'Expires',
-        'StorageClass',
-        'ServerSideEncryption',
-        'Metadata',
         'ACL',
-        'ContentType',
-        'ContentEncoding',
+        'CacheControl',
         'ContentDisposition',
+        'ContentEncoding',
         'ContentLength',
+        'ContentType',
+        'Expires',
+        'GrantFullControl',
+        'GrantRead',
+        'GrantReadACP',
+        'GrantWriteACP',
+        'Metadata',
+        'RequestPayer',
+        'SSECustomerAlgorithm',
+        'SSECustomerKey',
+        'SSECustomerKeyMD5',
+        'SSEKMSKeyId',
+        'ServerSideEncryption',
+        'StorageClass',
         'Tagging',
         'WebsiteRedirectLocation',
-        'SSEKMSKeyId'
     ];
 
     /**
@@ -94,7 +106,7 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
      */
     public function setBucket($bucket)
     {
-        $this->bucket =  $bucket;
+        $this->bucket = $bucket;
     }
 
     /**
@@ -167,7 +179,7 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
             'deleteObject',
             [
                 'Bucket' => $this->bucket,
-                'Key' => $location,
+                'Key'    => $location,
             ]
         );
 
@@ -298,8 +310,8 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
             'headObject',
             [
                 'Bucket' => $this->bucket,
-                'Key' => $this->applyPathPrefix($path),
-            ]
+                'Key'    => $this->applyPathPrefix($path),
+            ] + $this->options
         );
 
         /* @var Result $result */
@@ -395,10 +407,10 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
         $command = $this->s3Client->getCommand(
             'copyObject',
             [
-                'Bucket' => $this->bucket,
-                'Key' => $this->applyPathPrefix($newpath),
+                'Bucket'     => $this->bucket,
+                'Key'        => $this->applyPathPrefix($newpath),
                 'CopySource' => urlencode($this->bucket . '/' . $this->applyPathPrefix($path)),
-                'ACL' => $this->getRawVisibility($path) === AdapterInterface::VISIBILITY_PUBLIC
+                'ACL'        => $this->getRawVisibility($path) === AdapterInterface::VISIBILITY_PUBLIC
                     ? 'public-read' : 'private',
             ] + $this->options
         );
@@ -442,7 +454,7 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
     {
         $options = [
             'Bucket' => $this->bucket,
-            'Key' => $this->applyPathPrefix($path),
+            'Key'    => $this->applyPathPrefix($path),
         ];
 
         if (isset($this->options['@http'])) {
@@ -475,8 +487,8 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
             'putObjectAcl',
             [
                 'Bucket' => $this->bucket,
-                'Key' => $this->applyPathPrefix($path),
-                'ACL' => $visibility === AdapterInterface::VISIBILITY_PUBLIC ? 'public-read' : 'private',
+                'Key'    => $this->applyPathPrefix($path),
+                'ACL'    => $visibility === AdapterInterface::VISIBILITY_PUBLIC ? 'public-read' : 'private',
             ]
         );
 
@@ -532,7 +544,7 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
             'getObjectAcl',
             [
                 'Bucket' => $this->bucket,
-                'Key' => $this->applyPathPrefix($path),
+                'Key'    => $this->applyPathPrefix($path),
             ]
         );
 
@@ -560,7 +572,7 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
      * @param        $body
      * @param Config $config
      *
-     * @return array
+     * @return array|bool
      */
     protected function upload($path, $body, Config $config)
     {
@@ -573,16 +585,20 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
         }
 
         if ( ! isset($options['ContentLength'])) {
-            $options['ContentLength'] = is_string($body) ? Util::contentSize($body) : Util::getStreamSize($body);
+            $options['ContentLength'] = is_resource($body) ? Util::getStreamSize($body) : Util::contentSize($body);
         }
 
         if ($options['ContentLength'] === null) {
             unset($options['ContentLength']);
         }
 
-        $this->s3Client->upload($this->bucket, $key, $body, $acl, ['params' => $options]);
+        try {
+            $this->s3Client->upload($this->bucket, $key, $body, $acl, ['params' => $options]);
+        } catch (S3MultipartUploadException $multipartUploadException) {
+            return false;
+        }
 
-        return $this->normalizeResponse($options, $key);
+        return $this->normalizeResponse($options, $path);
     }
 
     /**
@@ -663,8 +679,8 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
         $command = $this->s3Client->getCommand(
             'listObjects',
             [
-                'Bucket' => $this->bucket,
-                'Prefix' => rtrim($location, '/') . '/',
+                'Bucket'  => $this->bucket,
+                'Prefix'  => rtrim($location, '/') . '/',
                 'MaxKeys' => 1,
             ]
         );
